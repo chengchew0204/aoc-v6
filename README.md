@@ -82,4 +82,46 @@ It insists that:
 - Thought and expression are always fragile, always interruptible  
 - The true subject is not the individual, but the emergent configuration of the crowd  
 
-Here, consciousness is an arena. To survive is to compete; to vanish is inevitable.  
+Here, consciousness is an arena. To survive is to compete; to vanish is inevitable.
+
+---
+
+## VII. Explain Arena: The Dialectical Game Mode
+
+**Explain Arena (申論擂台)** extends the platform's philosophical framework into an interactive game where consciousness is not only contested through presence, but through articulation and interrogation.
+
+### Concept
+
+If the core platform explores consciousness as an interruptible phenomenon, the game mode explores **consciousness as a dialogical process**—where understanding is tested, challenged, and refined through AI-mediated questioning.
+
+### Mechanism
+
+1. **AI as Examiner**: An AI generates open-ended, scenario-based questions drawn from knowledge domains
+2. **Competitive Response**: Participants compete to answer (buzz-in mechanism)
+3. **Oral Articulation**: Winners have 90 seconds to articulate their understanding
+4. **Dialectical Challenge**: The AI listens, identifies weaknesses, and poses follow-up questions
+5. **Multi-dimensional Evaluation**: Responses are scored across concept accuracy, structural coherence, practical examples, and response quality
+
+### Philosophical Extension
+
+- **Consciousness Tested**: Beyond mere visibility, participants must defend their understanding against intelligent interrogation
+- **The AI as Mirror**: The AI reflects back the gaps, contradictions, and blind spots in one's articulated thought
+- **Knowledge as Arena**: Like consciousness itself, understanding is shown to be provisional, contestable, and subject to external validation
+
+### Technical Implementation
+
+- Built on LiveKit Data Channel for real-time synchronization
+- Integrates OpenAI GPT-4 for question generation and evaluation
+- Uses Whisper API for speech-to-text transcription
+- Maintains fairness through timestamp-based buzzer logic (200ms collection window)
+
+### Getting Started
+
+See `QUICK_START.md` for rapid setup or `GAME_SETUP.md` for detailed documentation.
+
+**Requirements**:
+- OpenAI API key (for GPT-4 and Whisper)
+- Existing LiveKit configuration
+- Microphone access for voice recording
+
+This game mode transforms the arena from a space of visual presence into a space of **examined consciousness**—where survival depends not just on being seen, but on being understood.  

@@ -11,6 +11,9 @@ import {
   RemoteTrackPublication,
   ConnectionState,
 } from 'livekit-client';
+import { useGameState } from '@/hooks/useGameState';
+import GameUI from './GameUI';
+import GameControlPanel from './GameControlPanel';
 
 interface LiveKitRoomProps {
   roomName: string;
@@ -26,6 +29,18 @@ export default function LiveKitRoom({ roomName, identity, onDisconnected }: Live
   const [remoteAudioTrack, setRemoteAudioTrack] = useState<RemoteTrack | null>(null);
   const [connectionState, setConnectionState] = useState<ConnectionState>(ConnectionState.Disconnected);
   const [error, setError] = useState<string | null>(null);
+  const [isGameMode, setIsGameMode] = useState(false);
+
+  // Game state management
+  const {
+    gameState,
+    startGame,
+    generateQuestion,
+    buzzIn,
+    submitAnswer,
+    submitFollowUpAnswer,
+    nextRound,
+  } = useGameState(room, identity);
 
   const connectToRoom = useCallback(async (canPublish = false) => {
     try {
@@ -452,14 +467,44 @@ export default function LiveKitRoom({ roomName, identity, onDisconnected }: Live
         )}
         
         {isConnected && (
-          <button
-            onClick={disconnect}
-            className="border border-gray-600 text-gray-600 hover:border-gray-400 hover:text-gray-400 px-6 py-2 text-sm transition-colors duration-200"
-          >
-            Disconnect
-          </button>
+          <>
+            <button
+              onClick={() => setIsGameMode(!isGameMode)}
+              className={`border ${isGameMode ? 'border-green-500 text-green-500' : 'border-gray-600 text-gray-600'} hover:border-green-400 hover:text-green-400 px-6 py-2 text-sm transition-colors duration-200`}
+            >
+              {isGameMode ? 'Game Mode: ON' : 'Game Mode: OFF'}
+            </button>
+            
+            <button
+              onClick={disconnect}
+              className="border border-gray-600 text-gray-600 hover:border-gray-400 hover:text-gray-400 px-6 py-2 text-sm transition-colors duration-200"
+            >
+              Disconnect
+            </button>
+          </>
         )}
       </div>
+
+      {/* Game UI Overlay */}
+      {isGameMode && (
+        <>
+          <GameControlPanel
+            gameState={gameState}
+            onStartGame={startGame}
+            onGenerateQuestion={generateQuestion}
+            onNextRound={nextRound}
+          />
+          
+          <GameUI
+            gameState={gameState}
+            identity={identity}
+            room={room}
+            onBuzzIn={buzzIn}
+            onAnswerSubmit={submitAnswer}
+            onFollowUpAnswerSubmit={submitFollowUpAnswer}
+          />
+        </>
+      )}
       
       {/* Error/Info Display */}
       {error && (

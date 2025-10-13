@@ -1,0 +1,53 @@
+{
+  "topics": [
+    {
+      "id": "emergence-fundamentals",
+      "name": "Emergence Fundamentals",
+      "keywords": ["emergence", "self-organization", "complexity", "threshold", "feedback", "autopoiesis"],
+      "description": "Core concepts of emergence: how high-energy, far-from-equilibrium systems self-organize in unpredictable ways"
+    },
+    {
+      "id": "systems-networks",
+      "name": "Systems and Networks",
+      "keywords": ["system", "network", "dynamical system", "basin of attraction", "attractor", "nonlinear"],
+      "description": "Understanding systems, their behaviors, and interconnected networks"
+    },
+    {
+      "id": "thresholds-phase-change",
+      "name": "Thresholds and Phase Changes",
+      "keywords": ["threshold", "phase change", "bifurcation", "metastability", "sintering"],
+      "description": "Critical points where quantitative changes transform into qualitative shifts"
+    },
+    {
+      "id": "temporal-iteration",
+      "name": "Temporal Dynamics and Iteration",
+      "keywords": ["iteration", "temporal umwelt", "branchiness", "evolution", "affordance"],
+      "description": "Time-based processes, repetition with difference, and evolutionary dynamics"
+    },
+    {
+      "id": "catalysis-feedback",
+      "name": "Catalysis and Feedback Loops",
+      "keywords": ["catalysis", "autocatalysis", "feedback", "synergy", "blob"],
+      "description": "How elements enable new pathways and self-reinforcing processes"
+    },
+    {
+      "id": "fractals-scaling",
+      "name": "Fractals and Scaling",
+      "keywords": ["fractal", "scaling", "partial dimensionality", "self-similar"],
+      "description": "Self-similar patterns and dimensional relationships across scales"
+    },
+    {
+      "id": "cognitive-cultural",
+      "name": "Cognitive and Cultural Emergence",
+      "keywords": ["paradigm change", "art", "epiphany", "hierophany", "social evolution"],
+      "description": "Emergence in human consciousness, culture, and social systems"
+    },
+    {
+      "id": "philosophical-concepts",
+      "name": "Philosophical Concepts",
+      "keywords": ["onto-epistemological", "umwelt", "holon", "thermodynamics"],
+      "description": "Deep philosophical and theoretical frameworks of emergence"
+    }
+  ]
+}
+
