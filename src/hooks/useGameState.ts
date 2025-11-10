@@ -38,6 +38,24 @@ export function useGameState(room: Room | null, identity: string) {
   const buzzCollectionTimerRef = useRef<NodeJS.Timeout | null>(null);
   const encoder = new TextEncoder();
 
+  // Add player to game state
+  const addPlayer = useCallback((playerIdentity: string) => {
+    setGameState(prev => {
+      if (prev.players.has(playerIdentity)) {
+        return prev;
+      }
+      const newPlayers = new Map(prev.players);
+      newPlayers.set(playerIdentity, {
+        identity: playerIdentity,
+        score: 0,
+        isAnswering: false,
+        hasAnswered: false,
+      });
+      console.log(`Player added: ${playerIdentity}, total players: ${newPlayers.size}`);
+      return { ...prev, players: newPlayers };
+    });
+  }, []);
+
   // Send game message via Data Channel
   const sendGameMessage = useCallback((type: GameMessageType, payload?: any) => {
     if (!room) {
@@ -79,15 +97,18 @@ export function useGameState(room: Room | null, identity: string) {
   const startGame = useCallback((totalRounds: number = 5) => {
     sendGameMessage(GameMessageType.START_GAME);
     sendGameMessage(GameMessageType.CONFIGURE_ROUNDS, { totalRounds });
+    
+    // Ensure current player is registered
+    addPlayer(identity);
+    
     setGameState(prev => ({
       ...prev,
       isGameActive: true,
       stage: GameStage.WAITING,
-      players: new Map([[identity, { identity, score: 0, isAnswering: false, hasAnswered: false }]]),
       currentRound: 1,
       totalRounds,
     }));
-  }, [sendGameMessage, identity]);
+  }, [sendGameMessage, identity, addPlayer]);
 
   // Set content ID
   const setContent = useCallback((contentId: string) => {
@@ -332,6 +353,9 @@ export function useGameState(room: Room | null, identity: string) {
 
         console.log('Processing message from other player:', message.type);
 
+        // Auto-register any player who sends a message
+        addPlayer(message.sender);
+
         switch (message.type) {
           case GameMessageType.START_GAME:
             console.log('Starting game (from remote)');
@@ -444,6 +468,7 @@ export function useGameState(room: Room | null, identity: string) {
     submitAnswer,
     nextRound,
     resetGame,
+    addPlayer,
   };
 }
 

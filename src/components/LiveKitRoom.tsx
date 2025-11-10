@@ -41,9 +41,10 @@ export default function LiveKitRoom({ roomName, identity, onDisconnected }: Live
     submitAnswer,
     nextRound,
     resetGame,
+    addPlayer,
   } = useGameState(room, identity);
 
-  const connectToRoom = useCallback(async (canPublish = false) => {
+  const connectToRoom = useCallback(async (canPublish = true) => {
     try {
       setError(null);
       
@@ -142,6 +143,12 @@ export default function LiveKitRoom({ roomName, identity, onDisconnected }: Live
         }
       });
 
+      newRoom.on(RoomEvent.ParticipantConnected, (participant: RemoteParticipant) => {
+        console.log('Participant connected:', participant.identity);
+        // Auto-register new participant as a player
+        addPlayer(participant.identity);
+      });
+
       // Handle track muted events (when someone's broadcast is taken over)
       newRoom.on(RoomEvent.TrackMuted, (publication, participant) => {
         console.log('Track muted:', publication.kind, 'from', participant.identity);
@@ -165,6 +172,15 @@ export default function LiveKitRoom({ roomName, identity, onDisconnected }: Live
       console.log('Connecting to LiveKit URL:', livekitUrl);
       await newRoom.connect(livekitUrl, token);
 
+      // Register current user as a player
+      addPlayer(identity);
+
+      // Register all existing participants as players
+      newRoom.remoteParticipants.forEach((participant) => {
+        console.log('Registering existing participant:', participant.identity);
+        addPlayer(participant.identity);
+      });
+
       // If this connection is for publishing, enable camera and microphone
       if (canPublish) {
         try {
@@ -183,7 +199,7 @@ export default function LiveKitRoom({ roomName, identity, onDisconnected }: Live
       console.error('Failed to connect to room:', err);
       setError(err instanceof Error ? err.message : 'Failed to connect to room');
     }
-  }, [identity, roomName, onDisconnected]);
+  }, [identity, roomName, onDisconnected, addPlayer]);
 
   const startBroadcasting = useCallback(async () => {
     try {
@@ -311,51 +327,16 @@ export default function LiveKitRoom({ roomName, identity, onDisconnected }: Live
         return true;
       }
 
-      // Enable camera
+      // Enable camera (we have publish permissions from connection)
       await room.localParticipant.setCameraEnabled(true);
       console.log('Answerer camera enabled and published');
       return true;
     } catch (error) {
       console.error('Failed to enable answerer camera:', error);
-      
-      // If we don't have permissions, we need to reconnect with publish permissions
-      try {
-        console.log('Reconnecting with publish permissions for answering...');
-        
-        // Get a new token with publish permissions
-        const response = await fetch('/api/token', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            identity,
-            roomName,
-            canPublish: true,
-            canSubscribe: true,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to get publish token');
-        }
-
-        const { token } = await response.json();
-        
-        // Update room token to allow publishing
-        await room.connect(process.env.NEXT_PUBLIC_LIVEKIT_URL!, token);
-        
-        // Now try enabling camera again
-        await room.localParticipant.setCameraEnabled(true);
-        console.log('Camera enabled after permission upgrade');
-        return true;
-      } catch (reconnectError) {
-        console.error('Failed to upgrade permissions:', reconnectError);
-        setError('Unable to enable camera for answering. Please try starting broadcast first.');
-        return false;
-      }
+      setError('Unable to enable camera for answering. Please check camera permissions.');
+      return false;
     }
-  }, [room, roomName, identity]);
+  }, [room]);
 
   const disableAnswererCamera = useCallback(async () => {
     if (!room) return;
@@ -376,13 +357,13 @@ export default function LiveKitRoom({ roomName, identity, onDisconnected }: Live
     }
   }, [room]);
 
-  // Connect as viewer on component mount
+  // Connect with publish permissions on component mount
   useEffect(() => {
     let mounted = true;
     
     const initConnection = async () => {
       if (mounted) {
-        await connectToRoom(false);
+        await connectToRoom(true);
       }
     };
     
