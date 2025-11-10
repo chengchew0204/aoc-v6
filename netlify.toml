@@ -13,12 +13,7 @@
 [functions]
   external_node_modules = ["livekit-server-sdk", "openai", "sharp"]
   node_bundler = "esbuild"
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/___netlify-handler"
-  status = 200
-  force = true
+  included_files = ["src/data/**"]
 
 [[headers]]
   for = "/*"
