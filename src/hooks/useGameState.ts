@@ -98,8 +98,7 @@ export function useGameState(room: Room | null, identity: string) {
     sendGameMessage(GameMessageType.START_GAME);
     sendGameMessage(GameMessageType.CONFIGURE_ROUNDS, { totalRounds });
     
-    // Ensure current player is registered
-    addPlayer(identity);
+    // Player is already registered when joining room, no need to add again
     
     setGameState(prev => ({
       ...prev,
@@ -108,7 +107,7 @@ export function useGameState(room: Room | null, identity: string) {
       currentRound: 1,
       totalRounds,
     }));
-  }, [sendGameMessage, identity, addPlayer]);
+  }, [sendGameMessage, identity]);
 
   // Set content ID
   const setContent = useCallback((contentId: string) => {
@@ -440,11 +439,37 @@ export function useGameState(room: Room | null, identity: string) {
             break;
 
           case GameMessageType.SCORE_READY:
-            setGameState(prev => ({
-              ...prev,
-              stage: GameStage.SCORING,
-              finalScore: message.payload.finalScore,
-            }));
+            console.log('Received SCORE_READY:', message.payload);
+            setGameState(prev => {
+              // Update the answerer's score
+              const newPlayers = new Map(prev.players);
+              const answerer = newPlayers.get(message.payload.answerer);
+              if (answerer && message.payload.finalScore) {
+                answerer.score += message.payload.finalScore.totalScore;
+                answerer.hasAnswered = true;
+                answerer.isAnswering = false;
+                console.log(`Updated ${message.payload.answerer} score to ${answerer.score}`);
+              }
+              
+              return {
+                ...prev,
+                stage: GameStage.SCORING,
+                finalScore: message.payload.finalScore,
+                players: newPlayers,
+              };
+            });
+            break;
+
+          case GameMessageType.NEXT_ROUND:
+            console.log('Received NEXT_ROUND from remote');
+            setGameState(prev => {
+              const nextRoundNumber = prev.currentRound + 1;
+              return {
+                ...prev,
+                currentRound: nextRoundNumber,
+                stage: GameStage.WAITING,
+              };
+            });
             break;
         }
       } catch (error) {
