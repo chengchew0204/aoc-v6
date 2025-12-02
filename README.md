@@ -1,127 +1,189 @@
 # Arena of Consciousness  
-## I. Concept  
 
-**Arena of Consciousness** is an experimental online platform where live streaming becomes an allegory for the fleeting, unstable nature of consciousness.  
+A real-time streaming platform with an AI-powered quiz game, built to demonstrate full-stack development capabilities with WebRTC, real-time communication, and AI integration.
 
-In this space, anyone can initiate a live broadcast and immediately become the **dominant subject of awareness**. Yet this awareness is fragile: at any moment, another user may seize the stream, cut it off, and replace it with their own. Each live stream thus becomes a temporary fragment of consciousness—always contingent, always at risk of interruption.  
+## Overview
 
-The system continuously regenerates itself through cycles of birth, interruption, and rebirth, embodying the principle of **autopoiesis**. Existence here is never static; it is produced collectively, through contestation and renewal.  
+Arena of Consciousness is a web-based platform that combines real-time video/audio streaming with an interactive AI quiz game. The platform features a unique "takeover" mechanism where any participant can become the broadcaster, creating a dynamic, competitive streaming environment. The quiz game mode leverages OpenAI's GPT-4 and Whisper APIs to generate questions, evaluate spoken answers, and provide intelligent feedback.
 
----
+## Tech Stack
 
-## II. Philosophical Framework  
+### Frontend
+- **Next.js 14** - React framework with App Router
+- **React 18** - UI component library
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first styling
+- **LiveKit Components** - Pre-built WebRTC UI components
 
-1. **Autopoiesis (Self-Generation)**  
-   The platform is not defined by stable content, but by its self-sustaining process. Consciousness is enacted through the perpetual loop of streaming, interruption, and replacement.  
+### Backend
+- **Next.js API Routes** - Serverless API endpoints
+- **LiveKit Server SDK** - WebRTC signaling and room management
+- **OpenAI API** - GPT-4 for question generation and evaluation, Whisper for speech-to-text
 
-2. **The Finitude of Consciousness**  
-   Consciousness within the platform is radically finite—its persistence depends not on the will of the self, but on the unpredictable actions of others.  
+### Real-time Communication
+- **LiveKit Cloud** - WebRTC infrastructure
+- **WebRTC** - Peer-to-peer media streaming
+- **LiveKit Data Channels** - Real-time signaling and game state synchronization
 
-3. **Power, Thought, and Competition**  
-   The dominant consciousness is not owned by any single subject. It is the thought, image, or presence that manages to persist the longest amid a field of competing forces.  
+### Deployment
+- **Netlify** - Serverless hosting and continuous deployment
 
-4. **Anonymity and Collectivity**  
-   Every participant is stripped of stable identity, functioning instead as a neuron within a larger network. The subject is not an individual but an emergent effect of the crowd.  
+## Key Features
 
----
+### Real-time Streaming
+- Sub-second latency video/audio streaming using WebRTC SFU architecture
+- Dynamic broadcaster takeover system with automatic track management
+- Unlimited concurrent viewers with efficient bandwidth usage
+- Automatic reconnection handling
 
-## III. Audience / Participant Experience  
+### AI-Powered Quiz Game
+- GPT-4 generated open-ended questions across multiple knowledge domains
+- Voice-based answer submission with Whisper speech-to-text transcription
+- Real-time AI evaluation with follow-up questions to test deeper understanding
+- Multi-dimensional scoring: concept accuracy, structural coherence, practical examples, and response quality
+- Buzzer system with race condition handling (200ms collection window)
 
-- **Observation**  
-  Upon entering, viewers see only one active stream—the current embodiment of collective awareness.  
+### Content Upload & Analysis
+- Support for URL-based content ingestion (articles, documentation)
+- Automated question generation from uploaded content
+- Content analysis and processing pipeline
 
-- **Seizure**  
-  Any participant can attempt to seize control, abruptly cutting off the existing stream and replacing it with their own. This act is direct and violent, echoing the struggle of ideas to dominate.  
+## System Architecture
 
-- **Persistence**  
-  To remain visible, one must survive the constant threat of interruption. Duration itself becomes a competitive achievement.  
+### WebRTC Infrastructure
+The platform uses LiveKit's SFU (Selective Forwarding Unit) architecture for efficient real-time streaming:
+- Participants connect to a central SFU server
+- Video/audio tracks are selectively forwarded to subscribers
+- Data channels handle game state synchronization
+- JWT-based authentication for secure room access
 
-- **Regeneration**  
-  Each interruption is also a rebirth: the disappearance of one consciousness gives rise to another. The platform itself becomes a living organism, self-regenerating through conflict.  
+### API Design
 
----
+#### Authentication & Access
+- `POST /api/token` - Generate LiveKit JWT tokens with configurable permissions
 
-## IV. Form & Aesthetics  
+#### Streaming Control
+- `POST /api/takeover` - Manage broadcaster transitions by muting previous tracks
 
-- **Medium**: Web-based interactive platform (and/or gallery projection)  
-- **Core Mechanism**: Single featured stream at any given moment; seizure and defense functions  
-- **Visual Elements**:  
-  - *Dominance Index*: A counter showing the current subject’s survival time  
-  - *Neural Map*: A dynamic visualization of seizures and defenses, resembling the flickering of synaptic connections  
-- **Archival Output**: A daily “Consciousness Log” automatically records the longest surviving streams and most intense struggles, serving as a living archive of collective subjectivity  
+#### Game Logic
+- `POST /api/game/generate-question` - Generate questions from database or custom content
+- `POST /api/game/transcribe` - Convert audio to text using Whisper API
+- `POST /api/game/evaluate-answer` - AI evaluation with GPT-4
+- `POST /api/game/final-score` - Calculate and return comprehensive scores
+- `GET /api/game/check-config` - Verify API configuration
 
----
+#### Content Processing
+- `POST /api/content/process` - Fetch and parse web content
+- `POST /api/content/analyze` - Generate questions from content using GPT-4
 
-## V. Artistic Significance  
+## Technical Highlights
 
-1. **Challenging Digital Identity**  
-   Unlike mainstream platforms that build permanent profiles, **Arena of Consciousness** erases identity, reducing subjects to ephemeral presences.  
+### Real-time State Management
+- Client-side game state synchronized via LiveKit Data Channels
+- Custom React hooks for managing complex game flow
+- Optimistic UI updates with server reconciliation
 
-2. **Subverting Live Streaming Culture**  
-   Whereas conventional live streaming rewards continuity and accumulation, here the very possibility of duration is precarious, subject to immediate rupture.  
+### Audio Pipeline
+- Browser MediaRecorder API for audio capture
+- Binary blob transmission to backend
+- OpenAI Whisper API for high-accuracy transcription
+- Average transcription time: 2-3 seconds
 
-3. **Materializing Consciousness Philosophy**  
-   Consciousness is no longer an inner, private phenomenon. It becomes visible, interruptible, and public—an event subject to external control.  
+### Race Condition Handling
+- 200ms buzzer collection window to handle network latency
+- Timestamp-based priority for simultaneous buzz-ins
+- Server-authoritative game state to prevent cheating
 
-4. **A Social Metaphor**  
-   The arena dramatizes the dynamics of society itself: how power, visibility, and thought contend for dominance, and how subjectivity emerges only through collective struggle.  
+### Video Track Management
+- Dynamic camera enable/disable based on game state
+- Automatic video element attachment and cleanup
+- WebRTC track lifecycle management
 
----
+## Setup Instructions
 
-## VI. Exhibition Mode  
+### Prerequisites
+- Node.js 18+ and npm
+- LiveKit Cloud account (or self-hosted LiveKit server)
+- OpenAI API key with GPT-4 and Whisper access
 
-- **Online Exhibition**: Open access, anyone can enter and participate  
-- **Physical Installation**: Projected onto large screens in the gallery, showing the current dominant stream alongside the neural network map and consciousness logs. Visitors can use their phones to instantly seize control, collapsing the distance between viewer and participant  
+### Environment Variables
+Create a `.env.local` file in the root directory:
 
----
+```bash
+LIVEKIT_URL=wss://your-project.livekit.cloud
+LIVEKIT_API_KEY=your_api_key
+LIVEKIT_API_SECRET=your_api_secret
+OPENAI_API_KEY=sk-your_openai_key
+```
 
-**Arena of Consciousness** is a generator of finite consciousness.  
-It insists that:  
+### Installation
 
-- Existence is a temporary condition, allowed or denied by others  
-- Thought and expression are always fragile, always interruptible  
-- The true subject is not the individual, but the emergent configuration of the crowd  
+```bash
+# Install dependencies
+npm install
 
-Here, consciousness is an arena. To survive is to compete; to vanish is inevitable.
+# Run development server
+npm run dev
 
----
+# Build for production
+npm run build
 
-## VII. Explain Arena: The Dialectical Game Mode
+# Start production server
+npm start
+```
 
-**Explain Arena (申論擂台)** extends the platform's philosophical framework into an interactive game where consciousness is not only contested through presence, but through articulation and interrogation.
+The application will be available at `http://localhost:3000`
 
-### Concept
+### Testing Media Devices
+Visit `/test-media` to verify camera and microphone access before joining the main arena.
 
-If the core platform explores consciousness as an interruptible phenomenon, the game mode explores **consciousness as a dialogical process**—where understanding is tested, challenged, and refined through AI-mediated questioning.
+## Game Concept
 
-### Mechanism
+### The Arena
+The "Arena" represents a shared consciousness space where only one broadcaster can exist at any moment. Participants can "takeover" the broadcast at any time, creating a competitive dynamic for visibility and dominance. This mechanic explores themes of attention, persistence, and collective awareness in digital spaces.
 
-1. **AI as Examiner**: An AI generates open-ended, scenario-based questions drawn from knowledge domains
-2. **Competitive Response**: Participants compete to answer (buzz-in mechanism)
-3. **Oral Articulation**: Winners have 90 seconds to articulate their understanding
-4. **Dialectical Challenge**: The AI listens, identifies weaknesses, and poses follow-up questions
-5. **Multi-dimensional Evaluation**: Responses are scored across concept accuracy, structural coherence, practical examples, and response quality
+### Quiz Game Mode
+The quiz game transforms the arena into a knowledge competition:
+1. AI generates open-ended questions from pre-defined topics or custom content
+2. Players buzz in to answer (first to buzz gets to respond)
+3. Winner records a 90-second voice answer
+4. AI transcribes and evaluates the response
+5. AI may ask follow-up questions to probe deeper understanding
+6. Comprehensive scoring across multiple dimensions
 
-### Philosophical Extension
+The game demonstrates advanced full-stack integration: real-time communication, AI processing, audio handling, and complex state management all working in harmony.
 
-- **Consciousness Tested**: Beyond mere visibility, participants must defend their understanding against intelligent interrogation
-- **The AI as Mirror**: The AI reflects back the gaps, contradictions, and blind spots in one's articulated thought
-- **Knowledge as Arena**: Like consciousness itself, understanding is shown to be provisional, contestable, and subject to external validation
+## Project Structure
 
-### Technical Implementation
+```
+src/
+├── app/
+│   ├── api/              # Next.js API routes
+│   │   ├── token/        # LiveKit JWT generation
+│   │   ├── takeover/     # Broadcaster management
+│   │   ├── game/         # Quiz game endpoints
+│   │   └── content/      # Content processing
+│   ├── page.tsx          # Main landing page
+│   └── test-media/       # Device testing page
+├── components/           # React components
+│   ├── LiveKitRoom.tsx   # Main room component
+│   ├── GameUI.tsx        # Quiz game interface
+│   ├── AudioRecorder.tsx # Voice recording
+│   └── ContentUpload.tsx # Content ingestion
+├── hooks/                # Custom React hooks
+│   └── useGameState.ts   # Game state management
+├── types/                # TypeScript definitions
+└── utils/                # Helper functions
+```
 
-- Built on LiveKit Data Channel for real-time synchronization
-- Integrates OpenAI GPT-4 for question generation and evaluation
-- Uses Whisper API for speech-to-text transcription
-- Maintains fairness through timestamp-based buzzer logic (200ms collection window)
+## Documentation
 
-### Getting Started
+Additional documentation is available in the `/docs` directory:
+- Game introduction and rules
+- Deployment guide
+- Testing procedures
+- Implementation details
 
-See `QUICK_START.md` for rapid setup or `GAME_SETUP.md` for detailed documentation.
+## License
 
-**Requirements**:
-- OpenAI API key (for GPT-4 and Whisper)
-- Existing LiveKit configuration
-- Microphone access for voice recording
-
-This game mode transforms the arena from a space of visual presence into a space of **examined consciousness**—where survival depends not just on being seen, but on being understood.  
+This project is a portfolio demonstration of full-stack development capabilities.
