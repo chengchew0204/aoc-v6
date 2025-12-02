@@ -167,7 +167,7 @@ export default function GameUI({
         console.log('Detached remote camera track');
       }
     };
-  }, [gameState.stage, gameState.currentAnswerer, isMyTurn, room]);
+  }, [gameState.stage, gameState.currentAnswerer, isMyTurn, room, gameState.currentRound]);
 
   if (!gameState.isGameActive) {
     return null;
@@ -275,6 +275,7 @@ export default function GameUI({
                   <>
                     <video
                       id="answerer-local-video"
+                      key={`local-${gameState.currentAnswerer}-${gameState.currentRound}`}
                       autoPlay
                       playsInline
                       muted
@@ -288,6 +289,7 @@ export default function GameUI({
                   <>
                     <video
                       id="answerer-remote-video"
+                      key={`remote-${gameState.currentAnswerer}-${gameState.currentRound}`}
                       autoPlay
                       playsInline
                       className="w-full h-full object-cover scale-x-[-1]"
